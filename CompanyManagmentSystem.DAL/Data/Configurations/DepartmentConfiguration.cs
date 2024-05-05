@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-namespace CompanyManagmentSystem.DAL.Models
+using CompanyManagmentSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
