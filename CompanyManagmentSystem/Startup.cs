@@ -1,6 +1,8 @@
+using CompanyManagmentSystem.DAL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,10 +22,17 @@ namespace CompanyManagmentSystem
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // This method gets called by the runtime. Use this method to add services to the DI container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(); //Register Built-In Services Required by MVC
+            //services.AddScoped<AppDbContext>();
+            //services.AddScoped<DbContextOptions<AppDbContext>>();
+
+            services.AddDbContext<ApplicationDbContext>(optionsAction =>
+                optionsAction.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            ); // Default param is Scoped
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
