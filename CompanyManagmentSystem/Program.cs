@@ -13,7 +13,12 @@ namespace CompanyManagmentSystem
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var hostBuilder = CreateHostBuilder(args).Build();
+
+            // Data Seeding
+            // Apply Migrations
+
+            hostBuilder.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

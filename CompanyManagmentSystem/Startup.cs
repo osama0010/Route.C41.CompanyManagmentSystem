@@ -1,3 +1,5 @@
+using CompanyManagmentSystem.BLL.Interfaces;
+using CompanyManagmentSystem.BLL.Repositories;
 using CompanyManagmentSystem.DAL.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,13 +28,12 @@ namespace CompanyManagmentSystem
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews(); //Register Built-In Services Required by MVC
-            //services.AddScoped<AppDbContext>();
-            //services.AddScoped<DbContextOptions<AppDbContext>>();
 
             services.AddDbContext<ApplicationDbContext>(optionsAction =>
                 optionsAction.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             ); // Default param is Scoped
 
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
