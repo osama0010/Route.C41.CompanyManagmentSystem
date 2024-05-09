@@ -10,31 +10,11 @@ using System.Threading.Tasks;
 
 namespace CompanyManagmentSystem.BLL.Repositories
 {
-    public class DepartmentRepository : IDepartmentRepository
+    public class DepartmentRepository : GenericRepository<Department>
     {
-        private readonly ApplicationDbContext _dbContext;
-        public DepartmentRepository(ApplicationDbContext dbContext)
+        public DepartmentRepository(ApplicationDbContext dbContext):base(dbContext)
         {
-            _dbContext = dbContext;
+            
         }
-        public int Add(Department entity)
-        {
-            _dbContext.Departments.Add(entity);
-            return _dbContext.SaveChanges();
-        }
-        public int Update(Department entity)
-        {
-            _dbContext.Departments.Update(entity);
-            return _dbContext.SaveChanges();
-        }
-        public int Delete(Department entity)
-        {
-            _dbContext.Departments.Remove(entity);
-            return _dbContext.SaveChanges();
-        }
-        public IEnumerable<Department> GetAll() 
-            =>  _dbContext.Departments.AsNoTracking().ToList();
-        public Department Get(int id) 
-            => _dbContext.Find<Department>(id); //used to search locally first, Efcore 3.1 new Feature
     }
 }
