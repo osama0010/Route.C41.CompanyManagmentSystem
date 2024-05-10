@@ -1,6 +1,7 @@
 using CompanyManagmentSystem.BLL.Interfaces;
 using CompanyManagmentSystem.BLL.Repositories;
 using CompanyManagmentSystem.DAL.Data;
+using CompanyManagmentSystem.PL.MappingProfiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,6 +34,9 @@ namespace CompanyManagmentSystem
                 optionsAction.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             ); // Default param is Scoped
 
+
+            //services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
+            services.AddAutoMapper(typeof(Program).Assembly);
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }

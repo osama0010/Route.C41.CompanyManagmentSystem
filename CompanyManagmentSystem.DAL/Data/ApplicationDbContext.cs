@@ -24,6 +24,11 @@ namespace CompanyManagmentSystem.DAL.Data
             //modelBuilder.ApplyConfiguration<Department>(new DepartmentConfiguration());
             //modelBuilder.ApplyConfiguration<Department>(new EmployeeConfiguration());
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.Entity<Department>()
+                .HasMany(d => d.Employees)
+                .WithOne(e => e.Department)
+                .HasForeignKey(e => e.DepartmentId)
+                .IsRequired(false);
         }
 
         public DbSet<Department> Departments { get; set; }

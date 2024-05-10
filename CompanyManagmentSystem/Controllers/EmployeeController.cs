@@ -7,40 +7,53 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using CompanyManagmentSystem.BLL.Repositories;
 using Microsoft.Extensions.Hosting;
+using CompanyManagmentSystem.PL.ViewModels;
+using AutoMapper;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CompanyManagmentSystem.PL.Controllers
 {
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentRepository _departmentRepository;
         private readonly IHostEnvironment _env;
+        private readonly IMapper _mapper;
 
         //Ask CLR for Creating an Object from Class Implmenting IEmployee
-        public EmployeeController(IEmployeeRepository employeeRepository, IHostEnvironment hostEnvironment)
+        public EmployeeController(IEmployeeRepository employeeRepository,IDepartmentRepository departmentRepository ,
+            IHostEnvironment hostEnvironment, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
+            _departmentRepository = departmentRepository;
             _env = hostEnvironment;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
             var employees = _employeeRepository.GetAll();
-            return View(employees);
-        } 
+            return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
+            //_mapper.Map<IEnumerable<EmployeeViewModel>, IEnumerable<Employee>>(employeeVm);
+        }
         [HttpGet]
         public IActionResult Create()
         {
+            ViewBag.Departments = _departmentRepository.GetAll();
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel employeeVm)
         {
             if (ModelState.IsValid) //Server side validation
             {
+                var employee = _mapper.Map<EmployeeViewModel, Employee>(employeeVm);
                 var count = _employeeRepository.Add(employee);
                 if (count > 0)
                     return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            ViewBag.Departments = _departmentRepository.GetAll();
+            return View(employeeVm);
         }
         public IActionResult Details(int? id, string ViewName)
         {
@@ -52,25 +65,26 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (employee == null)
                 return NotFound();
 
-            return View(ViewName, employee);
+            return View(ViewName, _mapper.Map<EmployeeViewModel>(employee));
         }
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+            ViewBag.Departments = _departmentRepository.GetAll();
             return Details(id, "Edit");
         }
         [HttpPost]
-        public IActionResult Edit([FromRoute] int? id, Employee employee)
+        public IActionResult Edit([FromRoute] int? id, EmployeeViewModel employeeVm)
         {
-            if(id != employee.Id)
+            if(id != employeeVm.Id)
                 return BadRequest();
 
             if (!ModelState.IsValid)
-                return View(employee);
+                return View(employeeVm);
 
             try
             {
-                var count = _employeeRepository.Update(employee);
+                var count = _employeeRepository.Update(_mapper.Map<Employee>(employeeVm));
                 if (count > 0)
                     return RedirectToAction(nameof(Index));
             }
@@ -84,7 +98,7 @@ namespace CompanyManagmentSystem.PL.Controllers
                 else
                     ModelState.AddModelError(string.Empty, "An error has occured during updating the Employee record");
 
-                return View(employee);
+                return View(employeeVm);
             }
 
             return Details(id, "Edit");
@@ -95,11 +109,11 @@ namespace CompanyManagmentSystem.PL.Controllers
             return Details(id, "Delete");
         }
         [HttpPost]
-        public IActionResult Delete(Employee employee)
+        public IActionResult Delete(EmployeeViewModel employeeVM)
         {
             try
             {
-                _employeeRepository.Delete(employee);
+                _employeeRepository.Delete(_mapper.Map<Employee>(employeeVM));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -109,7 +123,7 @@ namespace CompanyManagmentSystem.PL.Controllers
                 else
                     ModelState.AddModelError(string.Empty, "An error has occured during Deleting the Record");
 
-                return View(employee);
+                return View(employeeVM);
             }
         }
     }

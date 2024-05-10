@@ -33,7 +33,14 @@ namespace CompanyManagmentSystem.BLL.Repositories
             return _dbContext.SaveChanges();
         }
         public IEnumerable<T> GetAll()
-            => _dbContext.Set<T>().AsNoTracking().ToList();
+        {
+            if(typeof(T) == typeof(Employee))
+            {
+                return(IEnumerable<T>)_dbContext.Employees.Include(e => e.Department).ToList();
+            }
+            return _dbContext.Set<T>().AsNoTracking().ToList();
+
+        }
         public T Get(int id)
             => _dbContext.Find<T>(id);
     }
