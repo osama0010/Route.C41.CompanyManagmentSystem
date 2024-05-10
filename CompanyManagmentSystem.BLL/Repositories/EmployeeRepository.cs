@@ -10,7 +10,7 @@ using System;
 
 namespace CompanyManagmentSystem.BLL.Repositories
 {
-    internal class EmployeeRepository : GenericRepository<Employee> , IEmployeeRepository
+    public class EmployeeRepository : GenericRepository<Employee> , IEmployeeRepository
     {
 
         public EmployeeRepository(ApplicationDbContext dbContext) // Ask CLR For Creating Object from DbContext Class
