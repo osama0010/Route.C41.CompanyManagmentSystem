@@ -1,6 +1,7 @@
 using CompanyManagmentSystem.BLL.Interfaces;
 using CompanyManagmentSystem.BLL.Repositories;
 using CompanyManagmentSystem.DAL.Data;
+using CompanyManagmentSystem.PL.Helpers;
 using CompanyManagmentSystem.PL.MappingProfiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,14 +32,15 @@ namespace CompanyManagmentSystem
             services.AddControllersWithViews(); //Register Built-In Services Required by MVC
 
             services.AddDbContext<ApplicationDbContext>(optionsAction =>
-                optionsAction.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            optionsAction.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             ); // Default param is Scoped
+            
+            services.AddApplicationServices();
 
-
-            //services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
             services.AddAutoMapper(typeof(Program).Assembly);
-            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            #region MyRegion
+            //services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
+            #endregion            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +60,6 @@ namespace CompanyManagmentSystem
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -11,35 +11,55 @@ using CompanyManagmentSystem.PL.ViewModels;
 using AutoMapper;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using CompanyManagmentSystem.BLL;
 
 namespace CompanyManagmentSystem.PL.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IHostEnvironment _env;
         private readonly IMapper _mapper;
 
         //Ask CLR for Creating an Object from Class Implmenting IEmployee
-        public EmployeeController(IEmployeeRepository employeeRepository,IDepartmentRepository departmentRepository ,
+        public EmployeeController(IUnitOfWork unitOfWork,
+            #region GenericRepositoryDesignPattern
+                //IEmployeeRepository employeeRepository,
+                //IDepartmentRepository departmentRepository, 
+            #endregion
             IHostEnvironment hostEnvironment, IMapper mapper)
         {
-            _employeeRepository = employeeRepository;
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
             _env = hostEnvironment;
             _mapper = mapper;
         }
-        public IActionResult Index()
+        public IActionResult Index(string searchInput)
         {
-            var employees = _employeeRepository.GetAll();
+            var employees = Enumerable.Empty<Employee>();
+
+            if (string.IsNullOrEmpty(searchInput))
+            {
+                employees = _unitOfWork.EmployeeRepository.GetAll();
+            }
+            else
+            {
+                employees = _unitOfWork.EmployeeRepository.SearchByName(searchInput.ToLower());
+            }
+
             return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
-            //_mapper.Map<IEnumerable<EmployeeViewModel>, IEnumerable<Employee>>(employeeVm);
+
+            #region MyRegion
+            //var employees = _employeeRepository.GetAll();
+            //return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
+            //_mapper.Map<IEnumerable<EmployeeViewModel>, IEnumerable<Employee>>(employeeVm); 
+            #endregion
         }
+
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Departments = _departmentRepository.GetAll();
+            //ViewBag.Departments = _unitOfWork.DepartmentRepository.GetAll();
             return View();
         }
         [HttpPost]
@@ -48,19 +68,28 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (ModelState.IsValid) //Server side validation
             {
                 var employee = _mapper.Map<EmployeeViewModel, Employee>(employeeVm);
-                var count = _employeeRepository.Add(employee);
-                if (count > 0)
+                _unitOfWork.EmployeeRepository.Add(employee);
+                #region Benefits of UnitOfWork
+                //with UnitOfWork DesignPattern now we able to update Department 
+                // _unitOfWorkk.DepartmentRepository.Update(department);
+                //or delete a Department
+                // _unitOfWorkk.DepartmentRepository.Update(department); 
+                #endregion
+                var count = _unitOfWork.Complete();
+                if(count > 0)
                     return RedirectToAction(nameof(Index));
             }
-            ViewBag.Departments = _departmentRepository.GetAll();
+            //ViewBag.Departments = _unitOfWork.DepartmentRepository.GetAll();
             return View(employeeVm);
         }
+
+
         public IActionResult Details(int? id, string ViewName)
         {
             if (!id.HasValue)
                 return BadRequest();
 
-            var employee = _employeeRepository.Get(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
 
             if (employee == null)
                 return NotFound();
@@ -70,10 +99,10 @@ namespace CompanyManagmentSystem.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            ViewBag.Departments = _departmentRepository.GetAll();
             return Details(id, "Edit");
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit([FromRoute] int? id, EmployeeViewModel employeeVm)
         {
             if(id != employeeVm.Id)
@@ -84,9 +113,9 @@ namespace CompanyManagmentSystem.PL.Controllers
 
             try
             {
-                var count = _employeeRepository.Update(_mapper.Map<Employee>(employeeVm));
-                if (count > 0)
-                    return RedirectToAction(nameof(Index));
+                _unitOfWork.EmployeeRepository.Update(_mapper.Map<Employee>(employeeVm));
+                _unitOfWork.Complete();
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
@@ -100,8 +129,6 @@ namespace CompanyManagmentSystem.PL.Controllers
 
                 return View(employeeVm);
             }
-
-            return Details(id, "Edit");
         }
         [HttpGet]
         public IActionResult Delete(int? id)
@@ -113,7 +140,8 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             try
             {
-                _employeeRepository.Delete(_mapper.Map<Employee>(employeeVM));
+                _unitOfWork.EmployeeRepository.Delete(_mapper.Map<Employee>(employeeVM));
+                _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

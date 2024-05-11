@@ -16,22 +16,16 @@ namespace CompanyManagmentSystem.BLL.Repositories
         {
             _dbContext = dbContext;
         }
-        public int Add(T entity)
-        {
-            _dbContext.Set<T>().Add(entity);
-            //_dbContext.Add(entity); // EF Core 3.1 NEW Feature
-            return _dbContext.SaveChanges();
-        }
-        public int Update(T entity)
-        {
-            _dbContext.Set<T>().Update(entity);
-            return _dbContext.SaveChanges();
-        }
-        public int Delete(T entity)
-        {
-            _dbContext.Set<T>().Remove(entity);
-            return _dbContext.SaveChanges();
-        }
+        public void Add(T entity)
+            => _dbContext.Set<T>().Add(entity); 
+
+        #region MyRegion
+        //_dbContext.Add(entity); // EF Core 3.1 NEW Feature
+        #endregion
+        public void Update(T entity)
+            => _dbContext.Set<T>().Update(entity);
+        public void Delete(T entity)
+            => _dbContext.Set<T>().Remove(entity);
         public IEnumerable<T> GetAll()
         {
             if(typeof(T) == typeof(Employee))

@@ -11,17 +11,17 @@ namespace CompanyManagmentSystem.PL.Controllers
 {
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IHostEnvironment _env;
 
-        public DepartmentController(IDepartmentRepository departmentRepository, IHostEnvironment env) // Ask CLR for Creating an Object from Class Implmenting IDepartmentRepos[
+        public DepartmentController(IUnitOfWork unitOfWork, IHostEnvironment env) // Ask CLR for Creating an Object from Class Implmenting IDepartmentRepos[
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
             _env = env;
         }
         public IActionResult Index()
         {
-            var departments = _departmentRepository.GetAll();
+            var departments = _unitOfWork.DepartmentRepository.GetAll();
             return View(departments);
         }
         [HttpGet]
@@ -34,9 +34,9 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             if (ModelState.IsValid) //Server side validation
             {
-                var count = _departmentRepository.Add(department);
-                if (count > 0)
-                    return RedirectToAction(nameof(Index));
+                _unitOfWork.DepartmentRepository.Add(department);
+                var count = _unitOfWork.Complete();
+                return RedirectToAction(nameof(Index));
             }
             return View(department);
         }
@@ -46,7 +46,7 @@ namespace CompanyManagmentSystem.PL.Controllers
             if(!id.HasValue) 
                 return BadRequest(); //400
 
-            var department = _departmentRepository.Get(id.Value);
+            var department = _unitOfWork.DepartmentRepository.Get(id.Value);
 
             if (department == null)
                 return NotFound(); //404
@@ -82,7 +82,8 @@ namespace CompanyManagmentSystem.PL.Controllers
 
             try
             {
-                _departmentRepository.Update(department);
+                _unitOfWork.DepartmentRepository.Update(department);
+                _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -109,7 +110,8 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             try
             {
-                _departmentRepository.Delete(department);
+                _unitOfWork.DepartmentRepository.Delete(department);
+                _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
