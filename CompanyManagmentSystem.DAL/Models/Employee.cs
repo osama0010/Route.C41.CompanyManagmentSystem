@@ -39,7 +39,9 @@ namespace CompanyManagmentSystem.DAL.Models
         public Department Department { get; set; }
         public int? DepartmentId { get; set; }
 
-        #region FrontENd Validation
+        public string? imageName { get; set; }
+
+        #region FrontEnd Validation
         //[MinLength(5, ErrorMessage = "Max length is 5 character")]
         //[Range(21, 30)]
         //[DataType(DataType.Currency)]

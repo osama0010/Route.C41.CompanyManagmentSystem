@@ -19,11 +19,18 @@
     <input asp-for="Age" class="form-control" />
     <span asp-validation-for="Age" class="text-danger"></span>
 </div>
+
 <div class="form-group">
-    <label class="col-form-label" asp-for="Gender"></label>
-    <input asp-for="Gender" class="form-control" />
-    <span asp-validation-for="Gender" class="text-danger"></span>
+    <label class="control-label" asp-for="Gender"></label> <br/>
+    @foreach (Gender genderOption in Enum.GetValues(typeof(Gender)))
+    {
+        <label class="custom-radio">
+            <input type="radio" asp-for="Gender" value="@genderOption" />
+            @genderOption
+        </label>
+    }
 </div>
+
 <div class="form-group">
     <label class="col-form-label" asp-for="Department"></label>
     <select class="form-control" asp-items="@Departments" asp-for="DepartmentId">
@@ -46,10 +53,15 @@
     <span asp-validation-for="Address" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <input asp-for="isActive" class="form-check-input" />
+    <input asp-for="isActive" class="custom-checkbox" />
     <label class="col-form-label" asp-for="isActive"></label>
 </div>
 <div class="form-group">
     <label class="col-form-label" asp-for="HiringDate"></label>
     <input asp-for="HiringDate" class="form-control" />
+</div>
+
+<div class="form-group">
+    <label class="col-form-label" asp-for="Image"></label>
+    <input class="form-control" asp-for="Image" />
 </div>

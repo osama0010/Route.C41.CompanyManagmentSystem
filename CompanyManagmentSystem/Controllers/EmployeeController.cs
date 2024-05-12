@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CompanyManagmentSystem.BLL;
+using CompanyManagmentSystem.PL.Helpers;
 
 namespace CompanyManagmentSystem.PL.Controllers
 {
@@ -67,16 +68,20 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             if (ModelState.IsValid) //Server side validation
             {
+                employeeVm.imageName = DocumentSettings.UploadFile(employeeVm.Image, "Images");
+
                 var employee = _mapper.Map<EmployeeViewModel, Employee>(employeeVm);
                 _unitOfWork.Repository<Employee>().Add(employee);
+
                 #region Benefits of UnitOfWork
                 //with UnitOfWork DesignPattern now we able to update Department 
                 // _unitOfWorkk.DepartmentRepository.Update(department);
                 //or delete a Department
                 // _unitOfWorkk.DepartmentRepository.Update(department); 
                 #endregion
+
                 var count = _unitOfWork.Complete();
-                if(count > 0)
+                if (count > 0)
                     return RedirectToAction(nameof(Index));
             }
             //ViewBag.Departments = _unitOfWork.DepartmentRepository.GetAll();
@@ -94,6 +99,9 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (employee == null)
                 return NotFound();
 
+            if(ViewName.Equals("Delete",StringComparison.CurrentCultureIgnoreCase))
+                TempData["ImageName"] = employee.imageName;
+
             return View(ViewName, _mapper.Map<EmployeeViewModel>(employee));
         }
         [HttpGet]
@@ -108,27 +116,33 @@ namespace CompanyManagmentSystem.PL.Controllers
             if(id != employeeVm.Id)
                 return BadRequest();
 
-            if (!ModelState.IsValid)
-                return View(employeeVm);
-
-            try
+            if (ModelState.IsValid)
             {
-                _unitOfWork.Repository<Employee>().Update(_mapper.Map<Employee>(employeeVm));
-                _unitOfWork.Complete();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                //1.To Log Exceptions
-                //2.Friendly Message
+                try
+                {
+                    if (employeeVm.Image is not null)
+                    {
+                        employeeVm.imageName = DocumentSettings.UploadFile(employeeVm.Image, "Images");
+                    }
+                    _unitOfWork.Repository<Employee>().Update(_mapper.Map<Employee>(employeeVm));
+                    _unitOfWork.Complete();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    //1.To Log Exceptions
+                    //2.Friendly Message
 
-                if (_env.IsDevelopment())
-                    ModelState.AddModelError(string.Empty, ex.Message);
-                else
-                    ModelState.AddModelError(string.Empty, "An error has occured during updating the Employee record");
+                    if (_env.IsDevelopment())
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                    else
+                        ModelState.AddModelError(string.Empty, "An error has occured during updating the Employee record");
 
-                return View(employeeVm);
+                    return View(employeeVm);
+                }
             }
+            return View(employeeVm);
+
         }
         [HttpGet]
         public IActionResult Delete(int? id)
@@ -136,13 +150,23 @@ namespace CompanyManagmentSystem.PL.Controllers
             return Details(id, "Delete");
         }
         [HttpPost]
-        public IActionResult Delete(EmployeeViewModel employeeVM)
+        public IActionResult Delete(EmployeeViewModel employeeVm)
         {
             try
             {
-                _unitOfWork.Repository<Employee>().Delete(_mapper.Map<Employee>(employeeVM));
-                _unitOfWork.Complete();
-                return RedirectToAction(nameof(Index));
+                employeeVm.imageName = TempData["ImageName"] as string;
+
+                _unitOfWork.Repository<Employee>().Delete(_mapper.Map<Employee>(employeeVm));
+                var count = _unitOfWork.Complete();
+                if (count > 0)
+                {
+                    if (employeeVm.imageName is not null)
+                    {
+                        DocumentSettings.DeleteFile(employeeVm.imageName, "Images");
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(employeeVm);
             }
             catch (Exception ex)
             {
@@ -151,7 +175,7 @@ namespace CompanyManagmentSystem.PL.Controllers
                 else
                     ModelState.AddModelError(string.Empty, "An error has occured during Deleting the Record");
 
-                return View(employeeVM);
+                return View(employeeVm);
             }
         }
     }

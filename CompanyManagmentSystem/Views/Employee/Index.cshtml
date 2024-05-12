@@ -29,13 +29,14 @@
         <table class="table table-striped table-hover mt-4">
         <thead>
             <tr>
+                <th>Image</th>
                 <th>@Html.DisplayNameFor(E => E.Name)</th>
                 <th>@Html.DisplayNameFor(E => E.Email)</th>
-                <th>@Html.DisplayNameFor(E => E.Age)</th>
+                @* <th>@Html.DisplayNameFor(E => E.Age)</th> *@
                 <th>@Html.DisplayNameFor(E => E.Gender)</th>
                 <th>@Html.DisplayNameFor(E => E.Salary)</th>
                 <th>@Html.DisplayNameFor(E => E.Department)</th>
-                <th>@Html.DisplayNameFor(E => E.Address)</th>
+                @* <th>@Html.DisplayNameFor(E => E.Address)</th> *@
                 <th>@Html.DisplayNameFor(E => E.isActive)</th>
                 @* <th>@Html.DisplayNameFor(E => E.PhoneNumber)</th> *@
                 @* <th>@Html.DisplayNameFor(E => E.HiringDate)</th> *@
@@ -48,13 +49,18 @@
             @foreach (var employee in Model)
             {
                 <tr>
+                    <td>
+                        <div>
+                            <img src="~/Files/Images/@employee.imageName" width="75" height="75" class="rounded-circle" alt="Employee Image" />
+                        </div>
+                    </td>
                     <td>@employee.Name</td>
                     <td>@Html.DisplayFor(M => employee.Email)</td>
-                    <td>@employee.Age</td>
+                    @* <td>@employee.Age</td> *@
                     <td>@employee.Gender</td>
                     <td>@Html.DisplayFor(M => employee.Salary)</td>
                     <td>@employee.Department?.Name</td>
-                    <td>@employee.Address</td>
+                    @* <td>@employee.Address</td> *@
                     @if (@employee.isActive)
                     {
                         <td>

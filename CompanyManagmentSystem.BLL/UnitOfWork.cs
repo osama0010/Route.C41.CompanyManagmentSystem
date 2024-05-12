@@ -38,9 +38,7 @@ namespace CompanyManagmentSystem.BLL
                     var repository = new GenericRepository<T>(_dbContext);
                     _repositories.Add(key, repository);
                 }
-
             }
-
             return _repositories[key] as IGenericRepository<T>;
         }
         public int Complete()

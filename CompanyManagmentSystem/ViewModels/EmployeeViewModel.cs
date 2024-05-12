@@ -1,6 +1,7 @@
 ﻿using CompanyManagmentSystem.DAL.Models;
 using System.ComponentModel.DataAnnotations;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace CompanyManagmentSystem.PL.ViewModels
 {
@@ -37,5 +38,8 @@ namespace CompanyManagmentSystem.PL.ViewModels
 
         public Department Department { get; set; }
         public int? DepartmentId { get; set; }
+
+        public string? imageName { get; set; }
+        public IFormFile? Image { get; set; }
     }
 }
