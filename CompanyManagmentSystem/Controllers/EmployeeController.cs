@@ -37,14 +37,14 @@ namespace CompanyManagmentSystem.PL.Controllers
         public IActionResult Index(string searchInput)
         {
             var employees = Enumerable.Empty<Employee>();
-
+            var emploeesRepo = _unitOfWork.Repository<Employee>() as IEmployeeRepository;
             if (string.IsNullOrEmpty(searchInput))
             {
-                employees = _unitOfWork.EmployeeRepository.GetAll();
+                employees = emploeesRepo.GetAll();
             }
             else
             {
-                employees = _unitOfWork.EmployeeRepository.SearchByName(searchInput.ToLower());
+                employees = emploeesRepo.SearchByName(searchInput.ToLower());
             }
 
             return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
@@ -68,7 +68,7 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (ModelState.IsValid) //Server side validation
             {
                 var employee = _mapper.Map<EmployeeViewModel, Employee>(employeeVm);
-                _unitOfWork.EmployeeRepository.Add(employee);
+                _unitOfWork.Repository<Employee>().Add(employee);
                 #region Benefits of UnitOfWork
                 //with UnitOfWork DesignPattern now we able to update Department 
                 // _unitOfWorkk.DepartmentRepository.Update(department);
@@ -89,7 +89,7 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (!id.HasValue)
                 return BadRequest();
 
-            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
+            var employee = _unitOfWork.Repository<Employee>().Get(id.Value);
 
             if (employee == null)
                 return NotFound();
@@ -113,7 +113,7 @@ namespace CompanyManagmentSystem.PL.Controllers
 
             try
             {
-                _unitOfWork.EmployeeRepository.Update(_mapper.Map<Employee>(employeeVm));
+                _unitOfWork.Repository<Employee>().Update(_mapper.Map<Employee>(employeeVm));
                 _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
@@ -140,7 +140,7 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             try
             {
-                _unitOfWork.EmployeeRepository.Delete(_mapper.Map<Employee>(employeeVM));
+                _unitOfWork.Repository<Employee>().Delete(_mapper.Map<Employee>(employeeVM));
                 _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }

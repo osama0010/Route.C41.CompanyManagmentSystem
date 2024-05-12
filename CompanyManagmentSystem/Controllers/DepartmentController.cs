@@ -21,7 +21,7 @@ namespace CompanyManagmentSystem.PL.Controllers
         }
         public IActionResult Index()
         {
-            var departments = _unitOfWork.DepartmentRepository.GetAll();
+            var departments = _unitOfWork.Repository<Department>().GetAll();
             return View(departments);
         }
         [HttpGet]
@@ -34,7 +34,7 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             if (ModelState.IsValid) //Server side validation
             {
-                _unitOfWork.DepartmentRepository.Add(department);
+                _unitOfWork.Repository<Department>().Add(department);
                 var count = _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
@@ -46,7 +46,7 @@ namespace CompanyManagmentSystem.PL.Controllers
             if(!id.HasValue) 
                 return BadRequest(); //400
 
-            var department = _unitOfWork.DepartmentRepository.Get(id.Value);
+            var department = _unitOfWork.Repository<Department>().Get(id.Value);
 
             if (department == null)
                 return NotFound(); //404
@@ -82,7 +82,7 @@ namespace CompanyManagmentSystem.PL.Controllers
 
             try
             {
-                _unitOfWork.DepartmentRepository.Update(department);
+                _unitOfWork.Repository<Department>().Update(department);
                 _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
@@ -110,7 +110,7 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             try
             {
-                _unitOfWork.DepartmentRepository.Delete(department);
+                _unitOfWork.Repository<Department>().Delete(department);
                 _unitOfWork.Complete();
                 return RedirectToAction(nameof(Index));
             }
