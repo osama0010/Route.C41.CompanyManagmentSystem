@@ -68,8 +68,10 @@ namespace CompanyManagmentSystem.PL.Controllers
         {
             if (ModelState.IsValid) //Server side validation
             {
-                employeeVm.imageName = DocumentSettings.UploadFile(employeeVm.Image, "Images");
-
+                if (employeeVm.Image is not null)
+                {
+                    employeeVm.imageName = DocumentSettings.UploadFile(employeeVm.Image, "Images");
+                }
                 var employee = _mapper.Map<EmployeeViewModel, Employee>(employeeVm);
                 _unitOfWork.Repository<Employee>().Add(employee);
 
@@ -89,7 +91,7 @@ namespace CompanyManagmentSystem.PL.Controllers
         }
 
 
-        public IActionResult Details(int? id, string ViewName)
+        public IActionResult Details(int? id, string ViewName = "Details")
         {
             if (!id.HasValue)
                 return BadRequest();
@@ -99,7 +101,7 @@ namespace CompanyManagmentSystem.PL.Controllers
             if (employee == null)
                 return NotFound();
 
-            if(ViewName.Equals("Delete",StringComparison.CurrentCultureIgnoreCase))
+            if (ViewName.Equals("Delete", StringComparison.OrdinalIgnoreCase))
                 TempData["ImageName"] = employee.imageName;
 
             return View(ViewName, _mapper.Map<EmployeeViewModel>(employee));
