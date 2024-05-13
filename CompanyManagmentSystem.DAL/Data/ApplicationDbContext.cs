@@ -7,10 +7,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CompanyManagmentSystem.DAL.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -21,6 +23,8 @@ namespace CompanyManagmentSystem.DAL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             //modelBuilder.ApplyConfiguration<Department>(new DepartmentConfiguration());
             //modelBuilder.ApplyConfiguration<Department>(new EmployeeConfiguration());
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -33,5 +37,7 @@ namespace CompanyManagmentSystem.DAL.Data
 
         public DbSet<Department> Departments { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        //public DbSet<IdentityUser> Users { get; set; }
+        //public DbSet<IdentityRole> Roles { get; set; }
     }
 }

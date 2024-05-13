@@ -1,6 +1,8 @@
 ﻿using CompanyManagmentSystem.BLL;
 using CompanyManagmentSystem.BLL.Interfaces;
 using CompanyManagmentSystem.BLL.Repositories;
+using CompanyManagmentSystem.DAL.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CompanyManagmentSystem.PL.Helpers
@@ -12,6 +14,8 @@ namespace CompanyManagmentSystem.PL.Helpers
             //services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             //services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             return services;
         }

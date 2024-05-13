@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System;
+using System.Threading.Tasks;
 
 namespace CompanyManagmentSystem.BLL.Repositories
 {
@@ -26,16 +27,16 @@ namespace CompanyManagmentSystem.BLL.Repositories
             => _dbContext.Set<T>().Update(entity);
         public void Delete(T entity)
             => _dbContext.Set<T>().Remove(entity);
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             if(typeof(T) == typeof(Employee))
             {
-                return(IEnumerable<T>)_dbContext.Employees.Include(e => e.Department).ToList();
+                return(IEnumerable<T>) await _dbContext.Employees.Include(e => e.Department).ToListAsync();
             }
             return _dbContext.Set<T>().AsNoTracking().ToList();
 
         }
-        public T Get(int id)
-            => _dbContext.Find<T>(id);
+        public async Task<T> GetAsync(int id)
+            => await _dbContext.FindAsync<T>(id);
     }
 }

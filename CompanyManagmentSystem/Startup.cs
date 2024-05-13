@@ -1,11 +1,13 @@
 using CompanyManagmentSystem.BLL.Interfaces;
 using CompanyManagmentSystem.BLL.Repositories;
 using CompanyManagmentSystem.DAL.Data;
+using CompanyManagmentSystem.DAL.Models;
 using CompanyManagmentSystem.PL.Helpers;
 using CompanyManagmentSystem.PL.MappingProfiles;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +39,30 @@ namespace CompanyManagmentSystem
             
             services.AddApplicationServices();
 
+
             services.AddAutoMapper(typeof(Program).Assembly);
+
+
+            //To Register (apply DI) UserManager, SignInManager, RoleManager and to add Configurations =
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+            {
+                options.Password.RequiredUniqueChars = 2;
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = true; //@%$
+				options.Password.RequireUppercase = true;
+				options.Password.RequiredLength = 5;
+
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(5);
+
+                options.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+            //services.AddAuthentication();
+
             #region MyRegion
             //services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
             #endregion            

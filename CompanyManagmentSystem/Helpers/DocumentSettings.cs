@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CompanyManagmentSystem.DAL.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using File = System.IO.File;
 
 namespace CompanyManagmentSystem.PL.Helpers
 {
     public static class DocumentSettings
     {
-        public static string UploadFile(IFormFile file, string folderName)
+        public static async Task<string> UploadFile(IFormFile file, string folderName)
         {
             // 1. Get Folder Path
             #region MyRegion
@@ -26,7 +29,7 @@ namespace CompanyManagmentSystem.PL.Helpers
             // 4. Save File as Streams[Data Per Tim]
             using var fileStream = new FileStream(filePath, FileMode.Create);
 
-            file.CopyTo(fileStream);
+            await file.CopyToAsync(fileStream);
 
             return fileName;
         }
