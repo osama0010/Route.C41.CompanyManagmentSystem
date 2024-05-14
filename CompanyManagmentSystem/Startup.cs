@@ -39,7 +39,6 @@ namespace CompanyManagmentSystem
             
             services.AddApplicationServices();
 
-
             services.AddAutoMapper(typeof(Program).Assembly);
 
 
@@ -60,16 +59,36 @@ namespace CompanyManagmentSystem
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/SignIn";
+                options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                options.AccessDeniedPath = "/Home/Error";
+            });
 
+            //called by default by AddIdentity but this is called explicitly for specific overloads
             //services.AddAuthentication();
+            #region MyRegion
+            //		services.AddAuthentication(options =>
+            //		{
+            //			options.DefaultAuthenticateScheme = "AnotherSchema";
+            //		})
+            //.AddCookie("AnotherSchema", options =>
+            //{
+            //	options.LoginPath = "/Account/SignIn";
+            //	options.ExpireTimeSpan = TimeSpan.FromDays(1);
+            //	options.AccessDeniedPath = "/Home/Error";
+            //}); 
+            #endregion
+
 
             #region MyRegion
             //services.AddAutoMapper(m => m.AddProfile(new EmployeeProfile()));
-            #endregion            
+            #endregion
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -85,6 +104,7 @@ namespace CompanyManagmentSystem
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

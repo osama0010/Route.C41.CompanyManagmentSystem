@@ -1,4 +1,5 @@
-﻿using CompanyManagmentSystem.DAL.Models;
+﻿using CompanyManagmentSystem.Controllers;
+using CompanyManagmentSystem.DAL.Models;
 using CompanyManagmentSystem.PL.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace CompanyManagmentSystem.PL.Controllers
 			_signInManager = signInManager;
 		}
 
-        #region SignUp
+        #region Sign Up
         [HttpGet]
         public IActionResult SignUp()
         {
@@ -57,11 +58,49 @@ namespace CompanyManagmentSystem.PL.Controllers
 
         #region Sign In
 
+        [HttpGet]
         public IActionResult SignIn()
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> SignIn(SignInViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user is not null)
+                {
+                    var flag = await _userManager.CheckPasswordAsync(user, model.Password);
+                    if(flag)
+                    {
+                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.rememberMe, false);
 
+                        if (result.IsLockedOut)
+							ModelState.AddModelError(string.Empty, "Your Account is Locked");
+
+                        if (result.Succeeded)
+                            return RedirectToAction(nameof(HomeController.Index), "Home");
+
+                        if (result.IsNotAllowed)
+							ModelState.AddModelError(string.Empty, "Your Email is not Confirmed Yet");
+                        
+
+					}
+				}
+                ModelState.AddModelError(string.Empty, "Invalid Login");
+            }
+            return View(model);
+        }
+
+        #endregion
+
+        #region Sign Out
+        public async new Task<IActionResult> SignOut()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(SignIn));
+        }
         #endregion
     }
 }
