@@ -57,7 +57,8 @@ namespace CompanyManagmentSystem
 
                 options.User.RequireUniqueEmail = true;
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(options =>
             {

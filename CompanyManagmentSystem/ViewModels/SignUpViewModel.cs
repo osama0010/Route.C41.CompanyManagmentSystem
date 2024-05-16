@@ -6,6 +6,7 @@ namespace CompanyManagmentSystem.PL.ViewModels
 	{
 		[Required(ErrorMessage = "UserName is Required")]
 		public string UserName { get; set; }
+
 		[Required(ErrorMessage = "Email is Required")]
 		[EmailAddress(ErrorMessage = "Invalid Email")]
 		public string Email { get; set; }
@@ -20,7 +21,7 @@ namespace CompanyManagmentSystem.PL.ViewModels
 
 
 		[Required(ErrorMessage = "Password is Required")]
-		[MinLength(5, ErrorMessage = "Minimum Password length is 5 u damn Watermelone lover Nigger")]
+		[MinLength(5, ErrorMessage = "Minimum Password length is 5")]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 
