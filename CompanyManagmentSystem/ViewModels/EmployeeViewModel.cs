@@ -33,7 +33,9 @@ namespace CompanyManagmentSystem.PL.ViewModels
         public DateTime HiringDate { get; set; }
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public Gender Gender { get; set; }
-        public EmpType EmployeType { get; set; }
+        [Display(Name = "Employee Type")]
+        public EmpType? EmployeeType { get; set; }
+        public int? EmpTypeINP { get; set; }
         public bool isDelete { get; set; } = false;
 
         public Department Department { get; set; }

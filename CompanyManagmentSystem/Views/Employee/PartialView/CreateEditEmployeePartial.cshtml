@@ -37,6 +37,14 @@
         <option value="@null">Select Department</option>
     </select>
 </div>
+
+<div class="form-group">
+    <label class="col-form-label" asp-for="EmployeeType"></label>
+    <select class="form-control" asp-items="Html.GetEnumSelectList<EmpType>()" asp-for="EmployeeType">
+        <option value="@null">Select Employee Type</option>
+    </select>
+</div>
+
 <div class="form-group">
     <label class="col-form-label" asp-for="Salary"></label>
     <input asp-for="Salary" class="form-control" />

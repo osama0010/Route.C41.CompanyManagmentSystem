@@ -43,9 +43,9 @@ namespace CompanyManagmentSystem.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
-            if(ModelState.IsValid)
-            {
-                var user = await _userManager.FindByNameAsync(model.UserName);
+            if(!ModelState.IsValid) return View(model);
+
+			var user = await _userManager.FindByNameAsync(model.UserName);
 
                 if(user is null)
                 {
@@ -67,7 +67,6 @@ namespace CompanyManagmentSystem.PL.Controllers
                 }
 
                 ModelState.AddModelError(string.Empty, "This Username is Already Used");
-            }
             return View(model);
         }
         #endregion
@@ -82,9 +81,9 @@ namespace CompanyManagmentSystem.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+            if (!ModelState.IsValid) return View(model);
+
+				var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user is not null)
                 {
                     var flag = await _userManager.CheckPasswordAsync(user, model.Password);
@@ -105,8 +104,7 @@ namespace CompanyManagmentSystem.PL.Controllers
 					}
 				}
                 ModelState.AddModelError(string.Empty, "Invalid Login");
-            }
-            return View(model);
+                return View(model);
         }
 
         #endregion
@@ -125,11 +123,11 @@ namespace CompanyManagmentSystem.PL.Controllers
 			return View();
 		}
         [HttpPost]
-        public async Task<IActionResult> SendResetPasswordEmail(ForgetPasswordViewModel model)
+        public async Task<IActionResult> Forgetpassword(ForgetPasswordViewModel model)
 		{
-            if(ModelState.IsValid)
-            {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+            if(!ModelState.IsValid) return View(model);
+
+			var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user is not null)
 				{
                     var resetPasswordToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -147,12 +145,12 @@ namespace CompanyManagmentSystem.PL.Controllers
                     return  RedirectToAction(nameof(CheckYourInbox));
 				}
                 ModelState.AddModelError(string.Empty, "There is No Account with this Email!!");
-			}
 			return View(model);
+
 		}
 
 
-        public IActionResult CheckYourInbox()
+		public IActionResult CheckYourInbox()
         {
             return View();
         }
@@ -168,9 +166,9 @@ namespace CompanyManagmentSystem.PL.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            if(ModelState.IsValid)
-			{
-                var email = TempData["Email"] as string;
+            if(!ModelState.IsValid) return View(model);
+
+				var email = TempData["Email"] as string;
                 var token = TempData["Token"] as string;
 
 				var user = await _userManager.FindByEmailAsync(email);
@@ -182,8 +180,6 @@ namespace CompanyManagmentSystem.PL.Controllers
 				}
 
 				ModelState.AddModelError(string.Empty, "Url is Invalid");
-
-			}
 			return View();
         }
 	}

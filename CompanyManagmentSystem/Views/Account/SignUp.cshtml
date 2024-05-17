@@ -13,16 +13,22 @@
 		<br /> *@
 		<form asp-action="SignUp">
 			<input class="text" asp-for="FirstName" placeholder="First Name" required="">
+			<span asp-validation-for="FirstName" class="text-danger"></span>
 			<br />
 			<input class="text" asp-for="LastName" placeholder="Last Name" required="">
+			<span asp-validation-for="LastName" class="text-danger"></span>
 			<br />
 			<input class="text" asp-for="UserName" placeholder="Username" required="">
+			<span asp-validation-for="UserName" class="text-danger"></span>
 			<br />
 			<input class="text" asp-for="Email" placeholder="Email" required="">
+			<span asp-validation-for="Email" class="text-danger"></span>
 			<br />
 			<input class="text" asp-for="Password" placeholder="Password" required="">
+			<span asp-validation-for="Password" class="text-danger"></span>
 			<br />
 			<input class="text" asp-for="ConfirmPassword" placeholder="Confirm Password" required="">
+			<span asp-validation-for="ConfirmPassword" class="text-danger"></span>
 			<br />
 			<div class="wthree-text">
 				<label class="anim">
@@ -36,6 +42,8 @@
 		<p>Already Have An Account?<a asp-action="SignIn"> Login Now!</a></p>
 	</div>
 </div>
+
+
 
 @section ValidationScriptSection 
 {
